@@ -2246,13 +2246,12 @@ Expr* getArraySizeExpr(const ArrayType* AT, ASTContext& context) {
     if (auto AT = dyn_cast<ArrayType>(VD->getType())) {
       Expr *init = nullptr;
       if (auto CAT = dyn_cast<ConstantArrayType>(AT))
-        init = ConstantFolder::synthesizeLiteral(context.getSizeType(), context,
+        init = ConstantFolder::synthesizeLiteral(m_Context.getSizeType(), m_Context,
                                              CAT->getSize().getZExtValue());
       else if (auto VSAT = dyn_cast<VariableArrayType>(AT))
         init = Visit(VSAT->getSizeExpr()).getExpr();
       else if (auto DSAT = dyn_cast<DependentSizedArrayType>(AT))
         init = Visit(DSAT->getSizeExpr()).getExpr();
-      m_Sema.BuildArrayType()
       VDDerivedInit = init;
       VDDerived = BuildVarDecl(VDDerivedType, "_d_" + VD->getNameAsString(),
                                VDDerivedInit, false, nullptr,
