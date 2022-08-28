@@ -44,9 +44,6 @@ class ErrorEstimationHandler : public ExternalRMVSource {
   clang::Expr* m_IdxExpr;
   /// A set of declRefExprs for parameter value replacements.
   std::unordered_map<const clang::VarDecl*, clang::Expr*> m_ParamRepls;
-  /// An expression to match nested function call errors with their
-  /// assignee (if any exists).
-  clang::Expr* m_NestedFuncError = nullptr;
   /// A variable to hold the type of the "ofstream" object.
   clang::QualType m_ErrorFileType;
   /// A variable to keep track of if error printing is enabled.

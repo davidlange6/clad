@@ -34,19 +34,6 @@ Expr* UpdateErrorForFuncCallAssigns(ErrorEstimationHandler* handler,
   return errorExpr;
 }
 
-Expr* UpdateErrorForFuncCallAssigns(ErrorEstimationHandler* handler,
-                                    Expr* savedExpr, Expr* origExpr,
-                                    Expr*& callError) {
-  Expr* errorExpr = nullptr;
-  if (!callError)
-    errorExpr = handler->GetError(savedExpr, origExpr);
-  else {
-    errorExpr = callError;
-    callError = nullptr;
-  }
-  return errorExpr;
-}
-
 void ErrorEstimationHandler::SetErrorEstimationModel(
     FPErrorEstimationModel* estModel) {
   m_EstModel = estModel;
@@ -548,8 +535,6 @@ void ErrorEstimationHandler::EmitBinaryOpErrorStmts(Expr* LExpr, Expr* oldValue,
   // previously.
   StmtDiff savedExpr = SaveValue(LExpr, isInsideLoop);
   // Assign the error.
-  Expr* errorExpr = UpdateErrorForFuncCallAssigns(this, savedExpr.getExpr_dx(),
-                                                  oldValue, m_NestedFuncError);
   auto decl = GetUnderlyingDeclRefOrNull(LExpr)->getDecl();
   Expr* errorExpr = UpdateErrorForFuncCallAssigns(this, savedExpr.getExpr_dx(),
                                                   oldValue, m_NestedFuncError);
@@ -573,9 +558,6 @@ void ErrorEstimationHandler::EmitDeclErrorStmts(VarDeclDiff VDDiff,
     StmtDiff savedDecl = SaveValue(VDRef, isInsideLoop);
     // If the VarDecl has an init, we should assign it with an error.
     if (VD->getInit() && !GetUnderlyingDeclRefOrNull(VD->getInit())) {
-      Expr* errorExpr = UpdateErrorForFuncCallAssigns(
-          this, savedDecl.getExpr_dx(),
-          m_RMV->BuildDeclRef(VDDiff.getDecl_dx()), m_NestedFuncError);
       auto varDeclExpr = m_RMV->BuildDeclRef(VDDiff.getDecl_dx());
       Expr* errorExpr = UpdateErrorForFuncCallAssigns(
           this, savedDecl.getExpr_dx(),
