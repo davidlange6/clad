@@ -2466,8 +2466,10 @@ Expr* getArraySizeExpr(const ArrayType* AT, ASTContext& context) {
     Stmt* DSClone = BuildDeclStmt(decls);
     Stmt* DSDiff = BuildDeclStmt(declsDiff);
 
-    // addToBlock(DSDiff, m_Globals);
-    addToCurrentBlock(DSDiff, clad::rmv::forward);
+    if (isInsideLoop) // does not work for arrays decl'd in loop
+      addToBlock(DSDiff, m_Globals);
+    else 
+      addToCurrentBlock(DSDiff, clad::rmv::forward);
 
     if (m_ExternalSource)
       m_ExternalSource->ActBeforeFinalizingVisitDeclStmt(decls, declsDiff);
